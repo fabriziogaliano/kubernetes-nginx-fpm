@@ -1,0 +1,75 @@
+
+
+---
+
+### DEPLOYMENTS ###
+
+apiVersion: apps/v1beta1
+kind: Deployment
+
+metadata:
+  name: nginx-php
+
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-php
+        run: nginx-php
+      
+
+    spec:
+
+      volumes: 
+
+        - name: nginx-file
+          configMap:
+              name: nginx-file
+              items:
+              - key: default.conf
+                path: default.conf
+
+
+        - name: php-index-file
+          configMap: 
+              name: php-index-file
+              items: 
+              - key: index.php
+                path: index.php
+
+        - name: index-html
+          configMap: 
+              name: index-html
+              items: 
+              - key: index.html
+                path: index.html
+
+      containers:
+
+        - name: nginx-web
+          image: nginx:stable
+          volumeMounts:
+
+            - mountPath: "/etc/nginx/conf.d/default.conf"
+              name: nginx-file
+              subPath: default.conf
+
+            - mountPath: "/usr/share/nginx/html/index.html"
+              name: index-html
+              subPath: index.html
+
+          ports:
+          - containerPort: 80
+
+        - name: php-fpm
+          image: php:7.1-fpm
+
+          volumeMounts:
+            - mountPath: "/var/www/html/index.php"
+              name: php-index-file
+              subPath: index.php
+
+          ports:
+          - containerPort: 9000
+

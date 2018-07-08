@@ -1,0 +1,20 @@
+### SERVICE ###
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: nginx-php
+  labels:
+    run: nginx-php
+
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 32001
+    protocol: TCP
+    name: http
+  selector:
+    run: nginx-php
